@@ -48,40 +48,52 @@ def verify_webhook(payload: bytes, signature: str) -> bool:
 # ========== GOOGLE SHEETS APPEND ==========
 def append_to_sheets(order: dict):
     """Append order data to Google Sheets"""
+    print("🔍 STEP 1: append_to_sheets started")
+    print(f"🔍 SPREADSHEET_ID: {SPREADSHEET_ID}")
+    print(f"🔍 SHEET_NAME: {SHEET_NAME}")
+    
     try:
+        print("🔍 STEP 2: Getting Google Sheets client...")
         sheets_client = get_google_sheets_client()
+        print("✅ STEP 3: Got Google Sheets client")
         
+        print("🔍 STEP 4: Building rows...")
         rows = []
-        for item in order.get('line_items', []):
+        line_items = order.get('line_items', [])
+        print(f"🔍 Found {len(line_items)} line items")
+        
+        for item in line_items:
             row = [
-                order.get('name', ''),                    # Order number
-                order.get('created_at', ''),              # Date
-                order.get('customer', {}).get('email', ''), # Customer email
-                item.get('title', ''),                    # Product name
-                item.get('quantity', 0),                  # Quantity
-                item.get('price', 0),                     # Unit price
-                float(item.get('quantity', 0)) * float(item.get('price', 0)),  # Line total
-                order.get('total_price', 0),              # Order total
-                order.get('financial_status', ''),        # Payment status
-                order.get('fulfillment_status', ''),      # Fulfillment status
-                datetime.now().isoformat()                # Processed at
+                order.get('name', ''),
+                order.get('customer', {}).get('email', ''),
+                item.get('title', ''),
+                item.get('quantity', 0),
+                item.get('price', 0),
+                float(item.get('quantity', 0)) * float(item.get('price', 0)),
+                order.get('total_price', 0),
+                datetime.now().isoformat()
             ]
             rows.append(row)
+            print(f"🔍 Row added for: {item.get('title')}")
         
         if rows:
+            print(f"🔍 STEP 5: Appending {len(rows)} rows to Google Sheets...")
             body = {'values': rows}
-            sheets_client.spreadsheets().values().append(
+            result = sheets_client.spreadsheets().values().append(
                 spreadsheetId=SPREADSHEET_ID,
-                range=f"{SHEET_NAME}!A:K",
+                range=f"{SHEET_NAME}!A:H",
                 valueInputOption='USER_ENTERED',
                 body=body
             ).execute()
-            print(f"✅ Appended {len(rows)} rows for order {order.get('name')}")
+            print(f"✅ STEP 6: Success! Appended {len(rows)} rows")
+            print(f"✅ Updated range: {result.get('updates', {}).get('updatedRange')}")
         else:
-            print(f"⚠️ No line items found in order {order.get('name')}")
+            print("⚠️ No rows to append")
             
     except Exception as e:
-        print(f"❌ Error appending to sheets: {e}")
+        print(f"❌ ERROR: {type(e).__name__}: {e}")
+        import traceback
+        traceback.print_exc()
 
 # ========== ORDER PROCESSING ==========
 def process_order(order: dict):
