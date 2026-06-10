@@ -48,24 +48,18 @@ def verify_webhook(payload: bytes, signature: str) -> bool:
 # ========== GOOGLE SHEETS APPEND ==========
 def append_to_sheets(order: dict):
     """Append order data to Google Sheets"""
-    print("🔍 STEP 1: append_to_sheets started")
-    print(f"🔍 SPREADSHEET_ID: {SPREADSHEET_ID}")
-    print(f"🔍 SHEET_NAME: {SHEET_NAME}")
-    
     try:
-        print("🔍 STEP 2: Getting Google Sheets client...")
         sheets_client = get_google_sheets_client()
-        print("✅ STEP 3: Got Google Sheets client")
         
-        print("🔍 STEP 4: Building rows...")
+        # Safely get customer email
+        customer = order.get('customer')
+        customer_email = customer.get('email', '') if customer else ''
+        
         rows = []
-        line_items = order.get('line_items', [])
-        print(f"🔍 Found {len(line_items)} line items")
-        
-        for item in line_items:
+        for item in order.get('line_items', []):
             row = [
                 order.get('name', ''),
-                order.get('customer', {}).get('email', ''),
+                customer_email,
                 item.get('title', ''),
                 item.get('quantity', 0),
                 item.get('price', 0),
@@ -74,35 +68,37 @@ def append_to_sheets(order: dict):
                 datetime.now().isoformat()
             ]
             rows.append(row)
-            print(f"🔍 Row added for: {item.get('title')}")
         
         if rows:
-            print(f"🔍 STEP 5: Appending {len(rows)} rows to Google Sheets...")
             body = {'values': rows}
-            result = sheets_client.spreadsheets().values().append(
+            sheets_client.spreadsheets().values().append(
                 spreadsheetId=SPREADSHEET_ID,
                 range=f"{SHEET_NAME}!A:H",
                 valueInputOption='USER_ENTERED',
                 body=body
             ).execute()
-            print(f"✅ STEP 6: Success! Appended {len(rows)} rows")
-            print(f"✅ Updated range: {result.get('updates', {}).get('updatedRange')}")
-        else:
-            print("⚠️ No rows to append")
-            
+            print(f"✅ Appended {len(rows)} rows")
+        
     except Exception as e:
-        print(f"❌ ERROR: {type(e).__name__}: {e}")
-        import traceback
-        traceback.print_exc()
+        print(f"❌ Error: {e}")
 
 # ========== ORDER PROCESSING ==========
 def process_order(order: dict):
-    """Process order in background"""
+    """Process the order data"""
     print(f"\n📦 Processing order: {order.get('name', 'Unknown')}")
-    print(f"   Customer: {order.get('customer', {}).get('email', 'Unknown')}")
+    
+    # Safely get customer data
+    customer = order.get('customer')
+    if customer is None:
+        customer_email = "No customer (test order)"
+    else:
+        customer_email = customer.get('email', 'Unknown')
+    
+    print(f"   Customer: {customer_email}")
     print(f"   Total: ${order.get('total_price', '0')}")
     print(f"   Items: {len(order.get('line_items', []))}")
     
+    # Append to Google Sheets
     append_to_sheets(order)
     
     print(f"✅ Order {order.get('name')} processed!")
