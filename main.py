@@ -134,7 +134,7 @@ def append_to_sheets(order: dict):
                 order.get('billing_address', {}).get('province', ''),
                 order.get('shipping_address', {}).get('province', ''),
                 "Payment ID",
-                order.get('payment_terms', ''),
+                order.get('payment_terms', '').get('payment_terms_name', ''),
                 "Next Payment Due At",
                 "Payment References",
                 "Business Entity Name",
