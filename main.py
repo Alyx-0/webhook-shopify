@@ -71,11 +71,13 @@ def append_to_sheets(order: dict):
                 order.get('total_tax', ''),
                 order.get('total_price', ''),
                 order.get('discount_codes', []),
+                order.get('total_discounts', ''),
                 order.get('shipping_lines', []),
                 order.get('created_at', ''),
                 item.get('quantity', ''),
                 item.get('name', ''),
                 item.get('price', ''),
+                "Lineitem compare at price",
                 item.get('sku', ''),
                 item.get('requires_shipping', ''),
                 item.get('taxable', ''),
@@ -144,7 +146,7 @@ def append_to_sheets(order: dict):
             body = {'values': rows}
             sheets_client.spreadsheets().values().append(
                 spreadsheetId=SPREADSHEET_ID,
-                range=f"{SHEET_NAME}!A:H",
+                range=f"{SHEET_NAME}!A:CC",
                 valueInputOption='USER_ENTERED',
                 body=body
             ).execute()
