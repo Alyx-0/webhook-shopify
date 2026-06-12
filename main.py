@@ -73,7 +73,6 @@ def append_to_sheets(order: dict):
                 ', '.join([d.get('code', '') for d in order.get('discount_codes', [])]),
                 ', '.join([s.get('title', '') for s in order.get('shipping_lines', [])]),
                 order.get('total_discounts', ''),
-                order.get('shipping_lines', []),
                 order.get('created_at', ''),
                 item.get('quantity', ''),
                 item.get('name', ''),
