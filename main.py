@@ -56,16 +56,87 @@ def append_to_sheets(order: dict):
         customer_email = customer.get('email', '') if customer else ''
         
         rows = []
-        for item in order.get('line_items', []):
+        for i, item in enumerate(order.get('line_items', [])):
             row = [
                 order.get('name', ''),
-                customer_email,
-                item.get('title', ''),
-                item.get('quantity', 0),
-                item.get('price', 0),
-                float(item.get('quantity', 0)) * float(item.get('price', 0)),
-                order.get('total_price', 0),
-                datetime.now().isoformat()
+                order.get('email', ''),
+                order.get('financial_status', ''),
+                order.get('processed_at', ''),
+                order.get('fulfillment_status', ''),
+                "fullfilled at",
+                order.get('buyer_accepts_marketing', ''),
+                order.get('currency', ''),
+                order.get('subtotal_price', ''),
+                order.get('total_shipping_price_set', {}).get('presentment_money', {}).get('amount'),
+                order.get('total_tax', ''),
+                order.get('total_price', ''),
+                order.get('discount_codes', []),
+                order.get('shipping_lines', []),
+                order.get('created_at', ''),
+                item.get('quantity', ''),
+                item.get('name', ''),
+                item.get('price', ''),
+                item.get('sku', ''),
+                item.get('requires_shipping', ''),
+                item.get('taxable', ''),
+                item.get('fulfillment_status', ''),
+                order.get('billing_address', {}).get('name', ''),
+                order.get('billing_address', {}).get('address1', ''),
+                order.get('billing_address', {}).get('address1', ''),
+                order.get('billing_address', {}).get('address2', ''),
+                order.get('billing_address', {}).get('company', ''),
+                order.get('billing_address', {}).get('city', ''),
+                order.get('billing_address', {}).get('zip', ''),
+                order.get('billing_address', {}).get('province_code', ''),
+                order.get('billing_address', {}).get('country_code', ''),
+                order.get('billing_address', {}).get('phone', ''),
+                order.get('shipping_address', {}).get('name', ''),
+                order.get('shipping_address', {}).get('address1', ''),
+                order.get('shipping_address', {}).get('address1', ''),
+                order.get('shipping_address', {}).get('address2', ''),
+                order.get('shipping_address', {}).get('company', ''),
+                order.get('shipping_address', {}).get('city', ''),
+                order.get('shipping_address', {}).get('zip', ''),
+                order.get('shipping_address', {}).get('province_code', ''),
+                order.get('shipping_address', {}).get('country_code', ''),
+                order.get('shipping_address', {}).get('phone', ''),
+                order.get('note', ''),
+                "empty",
+                order.get('cancelled_at', ''),
+                "Payment Method",
+                "Payment Reference",
+                "Refunded Amount",
+                order.get('vendor', ''),
+                order.get('total_outstanding', ''),
+                "Employee",
+                "Location",
+                "Device ID",
+                "Id",
+                order.get('tags', ''),
+                "Risk Level",
+                "Source",
+                item.get('total_discount', ''),
+                "", #Tax 1 Name
+                "", #Tax 1 Value
+                "", #Tax 2 Name
+                "", #Tax 2 Value
+                "", #Tax 3 Name
+                "", #Tax 3 Value
+                "", #Tax 4 Name
+                "", #Tax 4 Value
+                "", #Tax 5 Name
+                "", #Tax 5 Value
+                order.get('phone', ''),
+                "Receipt Number",
+                "Duties",
+                order.get('billing_address', {}).get('province', ''),
+                order.get('shipping_address', {}).get('province', ''),
+                "Payment ID",
+                order.get('payment_terms', ''),
+                "Next Payment Due At",
+                "Payment References",
+                "Business Entity Name",
+                order.get('merchant_business_entity_id', '')
             ]
             rows.append(row)
         
